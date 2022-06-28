@@ -46,7 +46,9 @@ def create_ts(data):
                 "activity_type": data.activity_type,
                 "from_time": get_datetime(str(data.date) + " " + str(data.from_time)),
                 "to_time": get_datetime(str(data.date) + " " + str(data.to_time)),
-                "remarks": data.remarks
+                "remarks": data.remarks,
+                "project": data.project,
+                "billable": data.bill
             }
         ]
     })
@@ -72,6 +74,8 @@ def create_ts_entry(data):
     row.from_time = get_datetime(str(data.date) + " " + str(data.from_time))
     row.to_time = get_datetime(str(data.date) + " " + str(data.to_time))
     row.remarks = data.remarks
+    row.project = data.project
+    row.billable = data.bill
     
     timesheet.save()
     

@@ -101,6 +101,27 @@ frappe.mobile_ts = {
         // Section Break
         page.add_break();
         
+        // Project
+        page.add_field({
+            label: 'Project',
+            fieldtype: 'Link',
+            fieldname: 'project',
+            options: 'Project'
+        });
+        // set width of to_time
+        page.fields_dict.project.$wrapper.removeClass("col-md-2");
+        page.fields_dict.project.$wrapper.addClass("col-md-4");
+        
+        // Bill Checkbox
+        page.add_field({
+            label: __('Bill'),
+            fieldtype: 'Check',
+            fieldname: 'bill'
+        });
+        
+        // Section Break
+        page.add_break();
+        
         // Remarks
         page.add_field({
             label: 'Bemerkungen',
@@ -219,6 +240,8 @@ frappe.mobile_ts = {
         data.from_time = page.fields_dict.from_time.get_value();
         data.to_time = page.fields_dict.to_time.get_value();
         data.remarks = page.fields_dict.remarks.get_value();
+        data.bill = page.fields_dict.bill.get_value();
+        data.project = page.fields_dict.project.get_value();
         return data
     },
     reset_page: function(page) {
