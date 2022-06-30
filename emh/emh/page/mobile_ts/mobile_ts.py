@@ -6,13 +6,14 @@
 # imports
 import frappe
 import json
-from frappe.utils.data import get_datetime, today
+from frappe.utils.data import get_datetime, today, nowtime
 
 @frappe.whitelist()
 def get_employee_and_timesheet(user):
     data = {
         'employee': None,
-        'timesheet': None
+        'timesheet': None,
+        'time': nowtime()
     }
     data = frappe._dict(data)
     if not user:
@@ -23,6 +24,9 @@ def get_employee_and_timesheet(user):
         timesheet = frappe.db.sql("""SELECT `name` FROM `tabTimesheet` WHERE `docstatus` = 0 AND `employee` = '{employee}' AND `start_date` = '{today}'""".format(employee=data.employee, today=today()), as_dict=True)
         if len(timesheet) > 0:
             data.timesheet = timesheet[0].name
+            time = frappe.db.sql("""SELECT `to_time` FROM `tabTimesheet Detail` WHERE `parent` = '{ts}' ORDER BY `idx` DESC LIMIT 1""".format(ts=timesheet[0].name), as_dict=True)
+            data.time = time[0].to_time.strftime("%H:%M:%S.%f")
+            
     
     return data
 

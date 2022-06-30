@@ -14,6 +14,7 @@ frappe.pages['mobile-ts'].on_page_load = function(wrapper) {
         "callback": function(r) {
             page.employee = r.message.employee;
             page.timesheet = r.message.timesheet;
+            page.from_time = r.message.time;
             
             // build page
             frappe.mobile_ts.build_essential(page);
@@ -80,7 +81,7 @@ frappe.mobile_ts = {
             label: 'Von',
             fieldtype: 'Time',
             fieldname: 'from_time',
-            default: frappe.datetime.now_time(),
+            default: page.from_time,
             reqd: 1
         });
         // set width of from_time
