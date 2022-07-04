@@ -70,7 +70,8 @@ frappe.mobile_ts = {
             fieldtype: 'Link',
             fieldname: 'activity_type',
             options: 'Activity Type',
-            reqd: 1
+            reqd: 1,
+            default: 'Ausführung'
         });
         // set width of from_time
         page.fields_dict.activity_type.$wrapper.removeClass("col-md-2");
@@ -117,7 +118,8 @@ frappe.mobile_ts = {
         page.add_field({
             label: __('Bill'),
             fieldtype: 'Check',
-            fieldname: 'bill'
+            fieldname: 'bill',
+            default: 1
         });
         
         // Section Break
