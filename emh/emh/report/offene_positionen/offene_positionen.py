@@ -109,7 +109,7 @@ def get_invoiceable_entries(from_date=None, to_date=None, customer=None):
            AND ((`tabTimesheet Detail`.`from_time` >= "{from_date}" AND `tabTimesheet Detail`.`from_time` <= "{to_date}")
             OR (`tabTimesheet Detail`.`to_time` >= "{from_date}" AND `tabTimesheet Detail`.`to_time` <= "{to_date}"))
            AND `tabSales Invoice Item`.`name` IS NULL
-        
+           AND `tabTimesheet Detail`.`billing_hours` > 0
         UNION SELECT
             `tabDelivery Note`.`customer` AS `customer`,
             `tabDelivery Note`.`customer_name` AS `customer_name`,
