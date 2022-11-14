@@ -33,14 +33,15 @@ cur_page.container.addEventListener("dblclick", function(event) {
         if (column.toString() === "10") {                 // 10 is the column index of "Create invoice"
             console.log("Create invoice for " + frappe.query_report.data[row]['customer']);
             frappe.call({
-                'method': "simpliq.simpliq.report.offene_positionen.offene_positionen.create_invoice",
+                'method': "emh.emh.report.offene_positionen.offene_positionen.create_invoice",
                 'args': {
                     'from_date': frappe.query_report.filters[0].value,
                     'to_date': frappe.query_report.filters[0].value,
                     'customer': frappe.query_report.data[row]['customer'] 
                 },
                 'callback': function(response) {
-                    frappe.show_alert( __("Created: " + response.message) );
+                    frappe.show_alert( __("Created") + ": <a href='/desk#Form/Sales Invoice/" + response.message
+                        + "'>" + response.message + "</a>");
                     frappe.query_report.refresh();
                 }
             });

@@ -77,7 +77,7 @@ def get_invoiceable_entries(from_date=None, to_date=None, customer=None):
     if not customer:
         customer = "%"
         
-    invoicing_item = frappe.get_value("simpliq settings", "simpliq settings", "service_item")
+    invoicing_item = frappe.get_value("emh settings", "emh settings", "service_item")
     
     sql_query = """
         SELECT 
@@ -177,11 +177,29 @@ def create_invoice(from_date, to_date, customer):
     # fetch entries
     entries = get_invoiceable_entries(from_date=from_date, to_date=to_date, customer=customer)
     
+    # determine tax template
+    steuerregion = frappe.get_doc("Customer", customer, "steuerregion")
+    if steuerregion == "DRL" and (frappe.get_doc("Customer", customer, "tax_id") or "")[0:2] == "CH":
+        steuerregion = "CH"
+        
+    tax_templates = frappe.get_all("emh settings Tax Template",
+        filters={'steuerregion': steuerregion},
+        fields=['tax_template']
+    )
+    if len(tax_templates) > 0:
+        tax_template = tax_templates[0]['tax_template']
+    else:
+        tax_template = frappe.get_value("emh settings", "emh settings", "default_tax_template")
+    # prepare taxes and charges
+    taxes_and_charges_template = frappe.get_doc("Sales Taxes and Charges Template", tax_template)
+    
     # create sales invoice
     sinv = frappe.get_doc({
         'doctype': "Sales Invoice",
         'customer': customer,
-        'customer_group': frappe.get_value("Customer", customer, "customer_group")
+        'customer_group': frappe.get_value("Customer", customer, "customer_group"),
+        'taxes_and_charges': tax_template,
+        'taxes': taxes_and_charges_template.taxes,
     })
     
     for e in entries:
@@ -195,7 +213,7 @@ def create_invoice(from_date, to_date, customer):
             'item_code': e.item,
             'qty': e.qty,
             'rate': e.rate,
-            'description': e.remarks,            # will be overwritten by frappe
+            'description': remarkstring,
             'remarks': remarkstring
 
         }
@@ -208,7 +226,7 @@ def create_invoice(from_date, to_date, customer):
             item['qty'] = e.hours
      
         sinv.append('items', item)
-        
+    
     sinv.insert()
     
     # insert abo references
