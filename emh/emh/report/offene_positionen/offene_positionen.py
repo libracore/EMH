@@ -32,7 +32,8 @@ def get_columns():
     ]
     
 def get_data(filters):
-    entries = get_invoiceable_entries(from_date=filters.from_date, to_date=filters.to_date, customer=filters.customer)
+    entries = get_invoiceable_entries(from_date=filters.from_date, 
+        to_date=filters.to_date, customer=filters.customer, project=filters.project)
     
     # find customers
     customers = []
@@ -69,13 +70,15 @@ def get_data(filters):
             
     return output
 
-def get_invoiceable_entries(from_date=None, to_date=None, customer=None):
+def get_invoiceable_entries(from_date=None, to_date=None, customer=None, project=None):
     if not from_date:
         from_date = "2000-01-01"
     if not to_date:
         to_date = "2099-12-31"
     if not customer:
         customer = "%"
+    if not project:
+        project = "%"
         
     invoicing_item = frappe.get_value("emh settings", "emh settings", "service_item")
     
@@ -106,10 +109,12 @@ def get_invoiceable_entries(from_date=None, to_date=None, customer=None):
         WHERE 
            `tabTimesheet`.`docstatus` = 1
            AND `tabCustomer`.`name` LIKE "{customer}"
+           AND `tabTimesheet Detail`.`project` LIKE "{project}"
            AND ((`tabTimesheet Detail`.`from_time` >= "{from_date}" AND `tabTimesheet Detail`.`from_time` <= "{to_date}")
             OR (`tabTimesheet Detail`.`to_time` >= "{from_date}" AND `tabTimesheet Detail`.`to_time` <= "{to_date}"))
            AND `tabSales Invoice Item`.`name` IS NULL
            AND `tabTimesheet Detail`.`billing_hours` > 0
+        
         UNION SELECT
             `tabDelivery Note`.`customer` AS `customer`,
             `tabDelivery Note`.`customer_name` AS `customer_name`,
@@ -134,6 +139,7 @@ def get_invoiceable_entries(from_date=None, to_date=None, customer=None):
         WHERE 
             `tabDelivery Note`.`docstatus` = 1
             AND `tabDelivery Note`.`customer` LIKE "{customer}"
+            AND (`tabDelivery Note`.`project` IS NULL OR `tabDelivery Note`.`project` LIKE "{project}")
             AND (`tabDelivery Note`.`posting_date` >= "{from_date}" AND `tabDelivery Note`.`posting_date` <= "{to_date}")
             AND `tabSales Invoice Item`.`name` IS NULL
             
@@ -168,14 +174,14 @@ def get_invoiceable_entries(from_date=None, to_date=None, customer=None):
                 )
         
         ORDER BY `date` ASC;
-    """.format(from_date=from_date, to_date=to_date, invoicing_item=invoicing_item, customer=customer)
+    """.format(from_date=from_date, to_date=to_date, invoicing_item=invoicing_item, customer=customer, project=project)
     entries = frappe.db.sql(sql_query, as_dict=True)
     return entries
 
 @frappe.whitelist()
-def create_invoice(from_date, to_date, customer):
+def create_invoice(from_date, to_date, customer, project):
     # fetch entries
-    entries = get_invoiceable_entries(from_date=from_date, to_date=to_date, customer=customer)
+    entries = get_invoiceable_entries(from_date=from_date, to_date=to_date, customer=customer, project=project)
     
     # determine tax template
     steuerregion = frappe.get_doc("Customer", customer, "steuerregion")

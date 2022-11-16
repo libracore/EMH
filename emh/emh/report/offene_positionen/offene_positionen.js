@@ -19,6 +19,12 @@ frappe.query_reports["Offene Positionen"] = {
             "label": __("Customer"),
             "fieldtype": "Link",
             "options": "Customer"
+        },
+        {
+            "fieldname":"project",
+            "label": __("Project"),
+            "fieldtype": "Link",
+            "options": "Project"
         }
     ],
     "initial_depth": 0
@@ -36,8 +42,9 @@ cur_page.container.addEventListener("dblclick", function(event) {
                 'method': "emh.emh.report.offene_positionen.offene_positionen.create_invoice",
                 'args': {
                     'from_date': frappe.query_report.filters[0].value,
-                    'to_date': frappe.query_report.filters[0].value,
-                    'customer': frappe.query_report.data[row]['customer'] 
+                    'to_date': frappe.query_report.filters[1].value,
+                    'customer': frappe.query_report.data[row]['customer'],
+                    'project': (frappe.query_report.filters[3].value || "%")
                 },
                 'callback': function(response) {
                     frappe.show_alert( __("Created") + ": <a href='/desk#Form/Sales Invoice/" + response.message
