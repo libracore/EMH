@@ -93,6 +93,7 @@ def get_invoiceable_entries(from_date=None, to_date=None, customer=None, project
             `tabTimesheet Detail`.`name` AS `detail`,
             `tabProject`.`name` AS `project`,
             "{invoicing_item}" AS `item`,
+            "{invoicing_item}" AS `item_name`,
             `tabTimesheet Detail`.`billing_hours` AS `hours`,
             1 AS `qty`,
             NULL AS `rate`,
@@ -125,6 +126,7 @@ def get_invoiceable_entries(from_date=None, to_date=None, customer=None, project
             `tabDelivery Note Item`.`name` AS `detail`,
             `tabDelivery Note`.`project` AS `project`,
             `tabDelivery Note Item`.`item_code` AS `item`,
+            `tabDelivery Note Item`.`item_name` AS `item_name`,
             NULL AS `hours`,
             `tabDelivery Note Item`.`qty` AS `qty`,
             `tabDelivery Note Item`.`net_rate` AS `rate`,
@@ -153,6 +155,7 @@ def get_invoiceable_entries(from_date=None, to_date=None, customer=None, project
             `tabAbo Item`.`name` AS `detail`,
             NULL AS `project`,
             `tabAbo Item`.`item` AS `item`,
+            `tabAbo Item`.`item_name` AS `item_name`,
             NULL AS `hours`,
             `tabAbo Item`.`qty` AS `qty`,
             `tabAbo Item`.`rate` AS `rate`,
@@ -211,7 +214,9 @@ def create_invoice(from_date, to_date, customer, project):
     for e in entries:
         #Format Remarks 
         if e.remarks:
-            remarkstring = "{0} : {1} <br>{2}".format(e.date.strftime("%d.%m.%Y"), e.employee_name,  e.remarks.replace("\n", "<br>"))
+            remarkstring = "{0} : {1} <br>{2}".format(e.date.strftime("%d.%m.%Y"), 
+                e.employee_name or e.item_name, 
+                e.remarks.replace("\n", "<br>"))
         else:
             remarkstring = "{0} : {1}".format(e.date.strftime("%d.%m.%Y"), e.employee_name)
 
