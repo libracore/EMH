@@ -168,7 +168,7 @@ def get_invoiceable_entries(from_date=None, to_date=None, customer=None, project
             AND `tabAbo`.`customer` LIKE "{customer}"
             AND `tabAbo`.`start_date` <= "{to_date}" 
             AND (`tabAbo`.`end_date` IS NULL OR `tabAbo`.`end_date` >= "{to_date}")
-            AND ((`tabAbo`.`interval` = "Monhtly" AND (SELECT IFNULL(MAX(`tAI1`.`date`), "2000-01-01") 
+            AND ((`tabAbo`.`interval` = "Monthly" AND (SELECT IFNULL(MAX(`tAI1`.`date`), "2000-01-01") 
                                                       FROM `tabAbo Invoice` AS `tAI1`
                                                       WHERE `tAI1`.`parent` = `tabAbo`.`name`) <= DATE_FORMAT(NOW() ,'%Y-%m-01'))
                  OR (`tabAbo`.`interval` = "Yearly" AND (SELECT IFNULL(MAX(`tAI2`.`date`), "2000-01-01")
