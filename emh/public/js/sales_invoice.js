@@ -4,7 +4,7 @@
 frappe.ui.form.on('Sales Invoice', {
     before_save: function(frm) {
         calculate_comission(frm);
-        }
+    }
 });
 
 function calculate_comission(frm) {
