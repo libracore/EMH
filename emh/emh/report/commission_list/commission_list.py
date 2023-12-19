@@ -1,4 +1,4 @@
-# Copyright (c) 2013, libracore and contributors
+# Copyright (c) 2023, libracore and contributors
 # For license information, please see license.txt
 
 from __future__ import unicode_literals
@@ -26,7 +26,6 @@ def get_columns():
 
 
 def get_data(filters):
-    frappe.log_error(filters.from_date, "from date")
     sql_query = """
         SELECT
             `customer` AS `customer`,
