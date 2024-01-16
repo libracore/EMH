@@ -26,38 +26,29 @@ def get_columns():
 
 
 def get_data(filters):
-    #original query, with real datas from the invoices
-    # ~ sql_query = """
-        # ~ SELECT
-            # ~ `customer` AS `customer`,
-            # ~ `customer_name` AS `customer_name`,
-            # ~ `posting_date` AS `invoice_date`,
-            # ~ `name` AS `invoice_no`,
-            # ~ `sales_partner` AS `sales_partner`,
-            # ~ `base_net_total` AS `turnover`,
-            # ~ `commission_rate` AS `commission_rate`,
-            # ~ `commission` AS `total_commission`
-        # ~ FROM `tabSales Invoice`
-        # ~ WHERE `posting_date` BETWEEN '{from_date}' AND '{to_date}'
-            # ~ AND `commission_rate` > 0
-            # ~ AND `docstatus` = 1
-        # ~ ORDER BY `customer` DESC
-    # ~ """.format(from_date=filters.from_date, to_date=filters.to_date)
-    
-    #Temporary query which works retroactive, has to be replaced by original query, because it dous only show actual commission rate (from the client)
+
     sql_query = """
         SELECT
-			`invoice`.`name` AS `invoice_no`,
-			`invoice`.`base_net_total` AS `turnover`,
-			`invoice`.`customer_name`,
-			`invoice`.`customer`,
-			`invoice`.`posting_date` AS `invoice_date`,
-			`tabCustomer`.`default_sales_partner` AS `sales_partner`,
-			`tabCustomer`.`default_commission_rate` AS `commission_rate`,
-			SUM(`item`.`amount`/100*`tabCustomer`.`default_commission_rate`) AS `total_commission`
+            `invoice`.`name` AS `invoice_no`,
+            `invoice`.`base_net_total` AS `turnover`,
+            `invoice`.`customer_name`,
+            `invoice`.`customer`,
+            `invoice`.`posting_date` AS `invoice_date`,
+            CASE
+                WHEN `invoice`.`sales_partner` IS NULL THEN `tabCustomer`.`default_sales_partner`
+                ELSE `invoice`.`sales_partner`
+            END AS `sales_partner`,
+            CASE
+				WHEN `invoice`.`commission_rate` = 0 OR `invoice`.`commission` = 0 THEN `tabCustomer`.`default_commission_rate` 
+                ELSE `invoice`.`commission_rate`
+            END AS `commission_rate`,
+            CASE
+                WHEN `invoice`.`commission_rate` = 0 OR `invoice`.`commission` = 0 THEN SUM(`item`.`amount`/100*`tabCustomer`.`default_commission_rate`)
+                ELSE `invoice`.`commission`
+            END AS `total_commission`
         FROM `tabSales Invoice` AS `invoice`
-        INNER JOIN `tabCustomer` ON `invoice`.`customer` = `tabCustomer`.`name`
-        INNER JOIN `tabSales Invoice Item` AS `item` ON `item`.`parent` = `invoice`.`name`
+        LEFT JOIN `tabCustomer` ON `invoice`.`customer` = `tabCustomer`.`name`
+        LEFT JOIN `tabSales Invoice Item` AS `item` ON `item`.`parent` = `invoice`.`name`
         WHERE `item`.`item_code` = "1000"
         AND `tabCustomer`.`default_sales_partner` IS NOT NULL
         AND `invoice`.`docstatus` = 1
