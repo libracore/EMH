@@ -1,4 +1,4 @@
-# Copyright (c) 2013, libracore and contributors
+# Copyright (c) 2023-2024, libracore and contributors
 # For license information, please see license.txt
 
 from __future__ import unicode_literals
@@ -29,32 +29,27 @@ def get_data(filters):
 
     sql_query = """
         SELECT
+            `invoice`.`customer`,
+            `invoice`.`customer_name`,
             `invoice`.`name` AS `invoice_no`,
             `invoice`.`base_net_total` AS `turnover`,
-            `invoice`.`customer_name`,
-            `invoice`.`customer`,
             `invoice`.`posting_date` AS `invoice_date`,
-            CASE
-                WHEN `invoice`.`sales_partner` IS NULL THEN `tabCustomer`.`default_sales_partner`
-                ELSE `invoice`.`sales_partner`
-            END AS `sales_partner`,
-            CASE
-				WHEN `invoice`.`commission_rate` = 0 OR `invoice`.`commission` = 0 THEN `tabCustomer`.`default_commission_rate` 
-                ELSE `invoice`.`commission_rate`
-            END AS `commission_rate`,
-            CASE
-                WHEN `invoice`.`commission_rate` = 0 OR `invoice`.`commission` = 0 THEN SUM(`item`.`amount`/100*`tabCustomer`.`default_commission_rate`)
-                ELSE `invoice`.`commission`
-            END AS `total_commission`
+            IFNULL(`invoice`.`sales_partner`, `tabCustomer`.`default_sales_partner`) AS `sales_partner`,
+            IF(`invoice`.`commission_rate` = 0 OR `invoice`.`commission` = 0,
+                `tabCustomer`.`default_commission_rate`,
+                `invoice`.`commission_rate`) AS `commission_rate`,
+            IF(`invoice`.`commission_rate` = 0 OR `invoice`.`commission` = 0,
+                SUM(`item`.`amount` / 100 * `tabCustomer`.`default_commission_rate`),
+                `invoice`.`commission`) AS `total_commission`
         FROM `tabSales Invoice` AS `invoice`
         LEFT JOIN `tabCustomer` ON `invoice`.`customer` = `tabCustomer`.`name`
         LEFT JOIN `tabSales Invoice Item` AS `item` ON `item`.`parent` = `invoice`.`name`
         WHERE `item`.`item_code` = "1000"
-        AND `tabCustomer`.`default_sales_partner` IS NOT NULL
-        AND `invoice`.`docstatus` = 1
-        AND `invoice`.`posting_date` BETWEEN '{from_date}' AND '{to_date}'
+          AND `tabCustomer`.`default_sales_partner` IS NOT NULL
+          AND `invoice`.`docstatus` = 1
+          AND `invoice`.`posting_date` BETWEEN '{from_date}' AND '{to_date}'
         GROUP BY `invoice_no`
-        ORDER BY `invoice_no` DESC
+        ORDER BY `invoice_no` DESC;
     """.format(from_date=filters.from_date, to_date=filters.to_date)
    
     data = frappe.db.sql(sql_query, as_dict=True)
