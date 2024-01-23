@@ -19,6 +19,7 @@ def get_columns():
         {"label": "Rechnungsnummer", "fieldname": "invoice_no", "fieldtype": "Data", "width": 150},
         {"label": "Verkaufspartner", "fieldname": "sales_partner", "fieldtype": "Data", "width": 110},
         {"label": "Umsatz", "fieldname": "turnover", "fieldtype": "Currency", "width": 80},
+        {"label": "Relevanter Umsatz", "fieldname": "relevant_turnover", "fieldtype": "Currency", "width": 80},
         {"label": "Provisionssatz", "fieldname": "commission_rate", "fieldtype": "Percent", "width": 40},
         {"label": "Provision", "fieldname": "total_commission", "fieldtype": "Currency", "width": 75}        
     ]
@@ -34,12 +35,13 @@ def get_data(filters):
             `invoice`.`name` AS `invoice_no`,
             `invoice`.`base_net_total` AS `turnover`,
             `invoice`.`posting_date` AS `invoice_date`,
+            SUM(`item`.`net_amount`) AS `relevant_turnover`,
             IFNULL(`invoice`.`sales_partner`, `tabCustomer`.`default_sales_partner`) AS `sales_partner`,
             IF(`invoice`.`commission_rate` = 0 OR `invoice`.`commission` = 0,
                 `tabCustomer`.`default_commission_rate`,
                 `invoice`.`commission_rate`) AS `commission_rate`,
             IF(`invoice`.`commission_rate` = 0 OR `invoice`.`commission` = 0,
-                SUM(`item`.`amount` / 100 * `tabCustomer`.`default_commission_rate`),
+                SUM(`item`.`net_amount` / 100 * `tabCustomer`.`default_commission_rate`),
                 `invoice`.`commission`) AS `total_commission`
         FROM `tabSales Invoice` AS `invoice`
         LEFT JOIN `tabCustomer` ON `invoice`.`customer` = `tabCustomer`.`name`

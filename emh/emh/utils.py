@@ -2,8 +2,8 @@
 # License: GNU General Public License v3. See license.txt
 
 import frappe
+from frappe.utils import add_months, add_years, today, getdate
 
-@frappe.whitelist()
 def calculate_comission(self, event):
 	#get service item
 	service_item = frappe.get_cached_value("emh settings", "emh settings", "service_item")
@@ -25,6 +25,34 @@ def calculate_comission(self, event):
 		commission = 0
 	
 	self.commission = commission
-	self.save()
 		
 	return
+
+def autocreate_abo_invoice():
+	#get all abos and current date
+	abos = frappe.db.get_list("Abo", filters={"enabled": 1, "manually_invoice": 0})
+	current_date = getdate(today())
+	
+	for abo in abos:
+		#get abo doc
+		abo_doc = frappe.get_doc("Abo", abo.name)
+		
+		#check next invoice date
+		last_invoice = abo_doc.start_date
+		if len(abo_doc.invoices) > 0:
+			for invoice in abo_doc.invoices:
+				if invoice.date > last_invoice:
+					last_invoice = invoice.date
+		
+		#check date for next invoice
+		if abo_doc.interval == "Monthly":
+			next_invoice = add_months(last_invoice, 1)
+		elif abo_doc.interval == "Yearly":
+			next_invoice = add_years(last_invoice, 1)
+			
+		#check if next invoice date is overdue and create invoice if needed
+		if next_invoice <= current_date:
+			abo_doc.create_invoice()
+			
+	return
+	

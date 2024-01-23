@@ -81,12 +81,18 @@ doctype_js = {"Sales Invoice" : "public/js/sales_invoice.js"}
 
 doc_events = {
  	"Sales Invoice": {
- 		"before_save": "emh.emh.utils.calculate_comission"
+ 		"validate": "emh.emh.utils.calculate_comission"
 	}
 }
 
 # Scheduled Tasks
 # ---------------
+
+scheduler_events = {
+	"daily": [
+		"emh.emh.utils.autocreate_abo_invoice"
+	]
+}
 
 # scheduler_events = {
 # 	"all": [

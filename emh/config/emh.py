@@ -48,6 +48,12 @@ def get_data():
                        "name": "Sales Invoice",
                        "label": _("Sales Invoice"),
                        "description": _("Sales Invoice")
+                   },
+                   {
+                       "type": "doctype",
+                       "name": "Abo",
+                       "label": _("Abo"),
+                       "description": _("Abo")
                    }
             ]
         },
@@ -72,6 +78,13 @@ def get_data():
                        "name": "Offene Positionen",
                        "label": _("Offene Positionen"),
                        "doctype": "Timesheet",
+                       "is_query_report": True
+                   },
+                   {
+                       "type": "report",
+                       "name": "Commission List",
+                       "label": _("Commission List"),
+                       "doctype": "Sales Invoice",
                        "is_query_report": True
                    }
             ]
