@@ -10,6 +10,7 @@
   "interval",
   "column_main",
   "enabled",
+  "manually_invoice",
   "start_date",
   "end_date",
   "section_items",
@@ -95,11 +96,20 @@
    "fieldtype": "Select",
    "label": "Interval",
    "options": "Yearly\nMonthly"
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "default": "0",
+   "fieldname": "manually_invoice",
+   "fieldtype": "Check",
+   "label": "Create Invoice manually",
+   "reqd": 1,
+   "set_only_once": 1
   }
  ],
- "modified": "2022-09-23 20:25:22.880539",
+ "modified": "2024-01-23 10:22:30.811198",
  "modified_by": "Administrator",
- "module": "emh",
+ "module": "EMH",
  "name": "Abo",
  "owner": "Administrator",
  "permissions": [
@@ -128,6 +138,7 @@
    "write": 1
   }
  ],
+ "quick_entry": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "title_field": "customer_name",

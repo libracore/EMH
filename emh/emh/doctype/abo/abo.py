@@ -15,7 +15,10 @@ class Abo(Document):
             'doctype': 'Sales Invoice',
             'customer': self.customer,
         })
-        contract_start = datetime.strptime(self.start_date, "%Y-%m-%d")
+        if type(self.start_date) == "str":
+            contract_start = datetime.strptime(self.start_date, "%Y-%m-%d")
+        else:
+            contract_start = self.start_date
         start_date = datetime(datetime.now().year, contract_start.month, contract_start.day)
         end_date = start_date + timedelta(days=365)
         

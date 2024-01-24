@@ -26,7 +26,7 @@ app_license = "MIT"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-doctype_js = {"Sales Invoice" : "public/js/sales_invoice.js"}
+# doctype_js = {"Sales Invoice" : "public/js/sales_invoice.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -79,16 +79,20 @@ doctype_js = {"Sales Invoice" : "public/js/sales_invoice.js"}
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-#	}
-# }
+doc_events = {
+ 	"Sales Invoice": {
+ 		"validate": "emh.emh.utils.calculate_comission"
+	}
+}
 
 # Scheduled Tasks
 # ---------------
+
+scheduler_events = {
+	"daily": [
+		"emh.emh.utils.autocreate_abo_invoice"
+	]
+}
 
 # scheduler_events = {
 # 	"all": [
