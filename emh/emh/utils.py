@@ -56,7 +56,7 @@ def autocreate_abo_invoice():
 	return
 
 @frappe.whitelist()	
-def get_email_recipient(address):
+def get_email_recipient_and_message(address):
 	recipient = frappe.db.get_value("Address", address, "email_id")
 	
 	template = frappe.db.get_value("emh settings", "emh settings", "invoice_email_template")

@@ -15,7 +15,7 @@ frappe.ui.form.on('Sales Invoice', {
 
 function custom_mail_dialog(frm) {
     frappe.call({
-        'method': 'emh.emh.utils.get_email_recipient',
+        'method': 'emh.emh.utils.get_email_recipient_and_message',
         'args': {
             'address': frm.doc.customer_address
         },
