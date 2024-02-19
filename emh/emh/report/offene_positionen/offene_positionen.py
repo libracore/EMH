@@ -187,8 +187,8 @@ def create_invoice(from_date, to_date, customer, project):
     entries = get_invoiceable_entries(from_date=from_date, to_date=to_date, customer=customer, project=project)
     
     # determine tax template
-    steuerregion = frappe.get_doc("Customer", customer, "steuerregion")
-    if steuerregion == "DRL" and (frappe.get_doc("Customer", customer, "tax_id") or "")[0:2] == "CH":
+    steuerregion = frappe.get_value("Customer", customer, "steuerregion")
+    if steuerregion == "DRL" and (frappe.get_value("Customer", customer, "tax_id") or "")[0:2] == "CH":
         steuerregion = "CH"
         
     tax_templates = frappe.get_all("emh settings Tax Template",
