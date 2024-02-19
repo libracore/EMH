@@ -58,10 +58,13 @@ def autocreate_abo_invoice():
 @frappe.whitelist()	
 def get_email_recipient(address):
 	recipient = frappe.db.get_value("Address", address, "email_id")
+	
+	template = frappe.db.get_value("emh settings", "emh settings", "invoice_email_template")
 
-	return
-	# ~ return {
-		# ~ 'recipient': recipient,
-		# ~ 'message':
-		# ~ }
+	html = frappe.db.get_value("Email Template", template, "response")
+	
+	return {
+		'recipient': recipient,
+		'message': html
+		}
 	

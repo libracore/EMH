@@ -22,6 +22,7 @@ function custom_mail_dialog(frm) {
         },
         'callback': function(response) {
             var recipient = response.message.recipient || cur_frm.doc.contact_email;
+            var message = response.message.message
             new frappe.views.CommunicationComposer({
 				doc: {
 					doctype: cur_frm.doc.doctype,
@@ -31,8 +32,8 @@ function custom_mail_dialog(frm) {
 				//~ cc:  cc,
 				//~ bcc: bcc,
 				recipients: recipient,
-				attach_document_print: true
-				message: get_email_body(frm)
+				attach_document_print: true,
+				message: message
 			});
         }
     });
