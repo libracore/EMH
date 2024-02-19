@@ -11,7 +11,6 @@ frappe.ui.form.on('Sales Invoice', {
             }
         }
     }
-    //cache_email_footer();       // prepare footer signature
 });
 
 function custom_mail_dialog(frm) {
