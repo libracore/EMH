@@ -16,8 +16,7 @@ def calculate_comission(self, event):
 			commissioned_amount += item.net_amount
 	
 	#get commission rate
-	commission_rate = self.commission_rate
-	frappe.log_error(commissioned_amount, "commissioned_amount")	
+	commission_rate = self.commission_rate	
 	#if there is a commissioned amount, calculate commission
 	if commissioned_amount > 0:
 		commission = commissioned_amount / 100 * commission_rate
@@ -55,4 +54,14 @@ def autocreate_abo_invoice():
 			abo_doc.create_invoice()
 			
 	return
+
+@frappe.whitelist()	
+def get_email_recipient(address):
+	recipient = frappe.db.get_value("Address", address, "email_id")
+
+	return
+	# ~ return {
+		# ~ 'recipient': recipient,
+		# ~ 'message':
+		# ~ }
 	
