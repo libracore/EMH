@@ -5,6 +5,7 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "description",
   "customer",
   "customer_name",
   "interval",
@@ -33,6 +34,7 @@
    "fetch_from": "customer.customer_name",
    "fieldname": "customer_name",
    "fieldtype": "Data",
+   "in_standard_filter": 1,
    "label": "Customer name",
    "read_only": 1
   },
@@ -105,9 +107,16 @@
    "label": "Create Invoice manually",
    "reqd": 1,
    "set_only_once": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Description"
   }
  ],
- "modified": "2024-01-23 10:22:30.811198",
+ "modified": "2024-03-12 16:10:42.154438",
  "modified_by": "Administrator",
  "module": "EMH",
  "name": "Abo",

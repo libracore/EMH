@@ -37,17 +37,27 @@ def autocreate_abo_invoice():
 		abo_doc = frappe.get_doc("Abo", abo.name)
 		
 		#check next invoice date
-		last_invoice = abo_doc.start_date
+		last_invoice = None
 		if len(abo_doc.invoices) > 0:
 			for invoice in abo_doc.invoices:
-				if invoice.date > last_invoice:
+				if last_invoice:
+					if invoice.date > last_invoice:
+						last_invoice = invoice.date
+				else:
 					last_invoice = invoice.date
 		
-		#check date for next invoice
 		if abo_doc.interval == "Monthly":
-			next_invoice = add_months(last_invoice, 1)
+			if last_invoice:
+				next_invoice = add_months(last_invoice, 1)
+			else:
+				next_invoice = abo_doc.start_date
 		elif abo_doc.interval == "Yearly":
-			next_invoice = add_years(last_invoice, 1)
+			if last_invoice:
+				next_invoice = add_years(last_invoice, 1)
+			else:
+				next_invoice = abo_doc.start_date
+		
+		print(next_invoice)
 			
 		#check if next invoice date is overdue and create invoice if needed
 		if next_invoice <= current_date:

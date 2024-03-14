@@ -50,17 +50,3 @@ class Abo(Document):
         self.save()
         return sinv.name
     pass
-
-# this function will create invoices due today (e.g. start date was the same month/day
-def create_todays_invoices():
-    d = datetime.date.today()
-    today = "-{:02d}-{:02d}".format(d.month, d.day)
-    invoices = frappe.db.sql("""
-        SELECT `name`
-        FROM `tabAbo`
-        WHERE SUBSTRING(`start_date`, 5, 6) = "{today}";""".format(today=today), as_dict=True)
-    if invoices and len(invoices) > 0:
-        for i in invoices:
-            doc = frappe.get_doc("Abo", i['name'])
-            doc.create_invoice()
-    return
